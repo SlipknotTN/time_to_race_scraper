@@ -300,7 +300,7 @@
   },
   {
     "round": 7,
-    "name": "BREMBO GRAND PRIX OF ITALY ",
+    "name": "Brembo Grand Prix of Italy",
     "short_name": "ITA",
     "circuit": "Autodromo Internazionale del Mugello",
     "location": "Mugello, Italy",
@@ -349,7 +349,7 @@
   },
   {
     "round": 8,
-    "name": "GRAND PRIX OF HUNGARY ",
+    "name": "Grand Prix of Hungary",
     "short_name": "HUN",
     "circuit": "Balaton Park Circuit",
     "location": "\tBalatonfokajár, Hungary",
@@ -398,9 +398,9 @@
   },
   {
     "round": 9,
-    "name": "Grand Prix of Czechia",
+    "name": "Monster Energy Grand Prix of Czechia",
     "short_name": "CZE",
-    "circuit": "Automotodrom Brno",
+    "circuit": "CREDITAS Autodrom Brno",
     "location": "Brno, Czechia",
     "sessions": [
       {
@@ -447,7 +447,7 @@
   },
   {
     "round": 10,
-    "name": "Grand Prix of The Netherlands",
+    "name": "Tissot Grand Prix of The Netherlands",
     "short_name": "NED",
     "circuit": "TT Circuit Assen",
     "location": "Assen, Netherlands",
@@ -594,7 +594,7 @@
   },
   {
     "round": 13,
-    "name": "Grand Prix of Aragon",
+    "name": "Michelin® Grand Prix of Aragon",
     "short_name": "ARA",
     "circuit": "MotorLand Aragón",
     "location": "Alcañiz, Spain",

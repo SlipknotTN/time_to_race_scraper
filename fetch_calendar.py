@@ -156,7 +156,7 @@ def fetch_f1_calendar():
 
         events.append({
             "round": round_num,
-            "name": name,
+            "name": clean_event_name(name),
             "circuit": circuit,
             "location": f"{locality}, {country}",
             "sessions": sessions,
@@ -255,7 +255,7 @@ def fetch_motogp_calendar():
 
         result.append({
             "round": round_num,
-            "name": ev.get("sponsored_name", ev["name"]),
+            "name": clean_event_name(ev.get("sponsored_name", ev["name"])),
             "short_name": ev.get("short_name", ""),
             "circuit": circuit,
             "location": location,
@@ -263,6 +263,14 @@ def fetch_motogp_calendar():
         })
 
     return result
+
+
+def clean_event_name(name):
+    name = name.strip()
+    if not name.isupper():
+        return name
+    words = [w.capitalize() if w.lower() != "of" else "of" for w in name.split()]
+    return " ".join(words)
 
 
 def load_json(filename):

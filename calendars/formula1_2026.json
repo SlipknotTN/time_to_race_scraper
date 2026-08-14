@@ -496,6 +496,39 @@
   },
   {
     "round": 16,
+    "name": "Bahrain Grand Prix in Malaysia",
+    "circuit": "Sepang International Circuit",
+    "location": "Kuala Lumpur, Malaysia",
+    "sessions": [
+      {
+        "name": "Free Practice 1",
+        "start": "2026-10-02T02:00:00+00:00",
+        "end": "2026-10-02T03:00:00+00:00"
+      },
+      {
+        "name": "Free Practice 2",
+        "start": "2026-10-02T06:00:00+00:00",
+        "end": "2026-10-02T07:00:00+00:00"
+      },
+      {
+        "name": "Free Practice 3",
+        "start": "2026-10-03T06:00:00+00:00",
+        "end": "2026-10-03T07:00:00+00:00"
+      },
+      {
+        "name": "Qualifying",
+        "start": "2026-10-03T09:00:00+00:00",
+        "end": "2026-10-03T10:00:00+00:00"
+      },
+      {
+        "name": "Race",
+        "start": "2026-10-04T07:00:00+00:00",
+        "end": "2026-10-04T09:00:00+00:00"
+      }
+    ]
+  },
+  {
+    "round": 17,
     "name": "Singapore Grand Prix",
     "circuit": "Marina Bay Street Circuit",
     "location": "Marina Bay, Singapore",
@@ -528,7 +561,7 @@
     ]
   },
   {
-    "round": 17,
+    "round": 18,
     "name": "United States Grand Prix",
     "circuit": "Circuit of the Americas",
     "location": "Austin, USA",
@@ -561,7 +594,7 @@
     ]
   },
   {
-    "round": 18,
+    "round": 19,
     "name": "Mexico City Grand Prix",
     "circuit": "Autódromo Hermanos Rodríguez",
     "location": "Mexico City, Mexico",
@@ -594,7 +627,7 @@
     ]
   },
   {
-    "round": 19,
+    "round": 20,
     "name": "Brazilian Grand Prix",
     "circuit": "Autódromo José Carlos Pace",
     "location": "São Paulo, Brazil",
@@ -627,7 +660,7 @@
     ]
   },
   {
-    "round": 20,
+    "round": 21,
     "name": "Las Vegas Grand Prix",
     "circuit": "Las Vegas Strip Street Circuit",
     "location": "Las Vegas, USA",
@@ -660,7 +693,7 @@
     ]
   },
   {
-    "round": 21,
+    "round": 22,
     "name": "Qatar Grand Prix",
     "circuit": "Losail International Circuit",
     "location": "Lusail, Qatar",
@@ -693,7 +726,7 @@
     ]
   },
   {
-    "round": 22,
+    "round": 23,
     "name": "Abu Dhabi Grand Prix",
     "circuit": "Yas Marina Circuit",
     "location": "Abu Dhabi, UAE",
