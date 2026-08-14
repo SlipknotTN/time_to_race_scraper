@@ -251,7 +251,7 @@ def fetch_motogp_calendar():
         circuit = ev["circuit"]["name"]
         place = ev["circuit"].get("place", "")
         country_name = ev.get("country", {}).get("name", "")
-        location = f"{place}, {country_name}" if place else country_name
+        location = " ".join(f"{place}, {country_name}".split()) if place else " ".join(country_name.split())
 
         result.append({
             "round": round_num,
@@ -266,7 +266,7 @@ def fetch_motogp_calendar():
 
 
 def clean_event_name(name):
-    name = name.strip()
+    name = " ".join(name.split())
     if not name.isupper():
         return name
     words = [w.capitalize() if w.lower() != "of" else "of" for w in name.split()]

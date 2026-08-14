@@ -352,7 +352,7 @@
     "name": "Grand Prix of Hungary",
     "short_name": "HUN",
     "circuit": "Balaton Park Circuit",
-    "location": "\tBalatonfokajár, Hungary",
+    "location": "Balatonfokajár, Hungary",
     "sessions": [
       {
         "name": "Free Practice 1",
