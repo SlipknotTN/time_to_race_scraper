@@ -114,6 +114,7 @@ F1_SESSION_DURATIONS = {
     "Qualifying": timedelta(hours=1),
     "Sprint": timedelta(minutes=30),
     "SprintQualifying": timedelta(hours=1),
+    "Race": timedelta(hours=2),
 }
 
 
@@ -132,7 +133,7 @@ def fetch_f1_calendar():
         country = race["Circuit"]["Location"]["country"]
 
         race_start = parse_f1_utc(race["date"], race.get("time", "00:00:00Z"))
-        race_duration = timedelta(hours=2)
+        race_duration = F1_SESSION_DURATIONS["Race"]
 
         sessions = [
             {
@@ -179,7 +180,7 @@ MOTOGP_SESSION_DURATIONS = {
     "Q": timedelta(minutes=15),
     "SPR": timedelta(minutes=30),
     "WUP": timedelta(minutes=10),
-    "RAC": timedelta(hours=1, minutes=15),
+    "RAC": timedelta(minutes=45),
 }
 
 # FP durations depend on session number (2026 format):
