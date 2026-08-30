@@ -175,12 +175,18 @@ MOTOGP_SESSION_LABELS = {
 }
 
 MOTOGP_SESSION_DURATIONS = {
-    "FP": timedelta(hours=1),
-    "PR": timedelta(hours=1),
-    "Q": timedelta(minutes=50),
+    "PR": timedelta(minutes=60),
+    "Q": timedelta(minutes=15),
     "SPR": timedelta(minutes=30),
-    "WUP": timedelta(minutes=30),
+    "WUP": timedelta(minutes=10),
     "RAC": timedelta(hours=1, minutes=15),
+}
+
+# FP durations depend on session number (2026 format):
+#  FP1 = 45 min, FP2 = 30 min
+MOTOGP_FP_DURATIONS = {
+    1: timedelta(minutes=45),
+    2: timedelta(minutes=30),
 }
 
 
@@ -226,12 +232,38 @@ def fetch_motogp_calendar():
         if not sessions_data:
             continue
 
+        # Warning if API returns multiple Race sessions for same event (e.g. CAT RAC2)
+        rac_sessions = [s for s in sessions_data if s.get("type") == "RAC"]
+        if len(rac_sessions) > 1:
+            rac_ids = ", ".join(s.get("id", "?") for s in rac_sessions)
+            print(
+                f"WARNING: {ev.get('short_name', '?')} ({ev.get('name', '?')} round {round_num}) "
+                f"has {len(rac_sessions)} RAC sessions – only first will be saved "
+                f"(ids: {rac_ids}; dates: {', '.join(s.get('date','?') for s in rac_sessions)})",
+                file=sys.stderr,
+            )
+
         sessions = []
         for ses in sessions_data:
-            s_start = parse_motogp_utc(ses["date"], country_iso, region_iso)
             stype = ses["type"]
+            # Don't save Race 2 – Catalonia API returns spurious second RAC (number=2)
+            if stype == "RAC" and ses.get("number") == 2:
+                print(
+                    f"  Skipping extra RAC session {ses.get('id','?')} "
+                    f"({ses.get('date','?')}) for {ev.get('short_name','?')}",
+                    file=sys.stderr,
+                )
+                continue
+
+            s_start = parse_motogp_utc(ses["date"], country_iso, region_iso)
             label = MOTOGP_SESSION_LABELS.get(stype, stype)
-            s_dur = MOTOGP_SESSION_DURATIONS.get(stype, timedelta(hours=1))
+
+            # Correct durations per 2026 MotoGP format:
+            #  FP1 45m, FP2 30m, Practice 60m, Q1/Q2 15m, WUP 10m
+            if stype == "FP":
+                s_dur = MOTOGP_FP_DURATIONS.get(ses.get("number"), timedelta(minutes=45))
+            else:
+                s_dur = MOTOGP_SESSION_DURATIONS.get(stype, timedelta(hours=1))
 
             if stype == "Q" and ses.get("number") is not None:
                 label = f"Qualifying {ses['number']}"
