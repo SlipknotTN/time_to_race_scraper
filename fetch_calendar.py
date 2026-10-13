@@ -244,6 +244,24 @@ def fetch_motogp_calendar():
                 file=sys.stderr,
             )
 
+        # Anchor session calendar dates to event date_start (Fri/Sat/Sun).
+        # API still returns stale dates for postponed rounds (QAT +2d, POR/VAL +7d).
+        try:
+            fri_date = datetime.fromisoformat(ev.get("date_start", "")).date()
+        except ValueError:
+            fri_date = None
+
+        def motogp_day_offset(stype, number):
+            if stype == "PR":
+                return 0
+            if stype == "FP":
+                return 0 if number == 1 else 1
+            if stype in ("Q", "SPR"):
+                return 1
+            if stype in ("WUP", "RAC"):
+                return 2
+            return None
+
         sessions = []
         for ses in sessions_data:
             stype = ses["type"]
@@ -256,7 +274,22 @@ def fetch_motogp_calendar():
                 )
                 continue
 
-            s_start = parse_motogp_utc(ses["date"], country_iso, region_iso)
+            raw_date = ses["date"]
+            offset = motogp_day_offset(stype, ses.get("number"))
+            if fri_date is not None and offset is not None:
+                # Keep local time-of-day from API, fix calendar date from event
+                local_time = datetime.fromisoformat(raw_date).time()
+                target_date = fri_date + timedelta(days=offset)
+                if datetime.fromisoformat(raw_date).date() != target_date:
+                    print(
+                        f"WARNING: {ev.get('short_name','?')} {stype}{ses.get('number','')} "
+                        f"date {raw_date[:10]} corrected to {target_date} "
+                        f"(event {ev.get('date_start','?')})",
+                        file=sys.stderr,
+                    )
+                raw_date = f"{target_date.isoformat()}T{local_time.isoformat()}+00:00"
+
+            s_start = parse_motogp_utc(raw_date, country_iso, region_iso)
             label = MOTOGP_SESSION_LABELS.get(stype, stype)
 
             # Correct durations per 2026 MotoGP format:
