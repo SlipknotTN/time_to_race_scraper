@@ -687,7 +687,7 @@
   },
   {
     "round": 15,
-    "name": "Grand Prix of Austria",
+    "name": "Qatar Airways Grand Prix of Austria",
     "short_name": "AUT",
     "circuit": "Red Bull Ring - Spielberg",
     "location": "Spielberg, Austria",
@@ -827,8 +827,8 @@
       },
       {
         "name": "Race",
-        "start": "2026-10-11T06:00:00+00:00",
-        "end": "2026-10-11T06:45:00+00:00"
+        "start": "2026-10-11T07:00:00+00:00",
+        "end": "2026-10-11T07:45:00+00:00"
       }
     ]
   },
