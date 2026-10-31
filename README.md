@@ -1,4 +1,4 @@
-# Time to Race — Calendar Scraper
+# Time to Race: Calendar Scraper
 
 Scraper script that fetches F1 and MotoGP season calendars from official APIs and produces
 normalized JSON files with every session converted to UTC. The output is suitable for
@@ -6,7 +6,7 @@ building race calendars, reminders, or any app that needs accurate session start
 
 ## Features
 
-- **Formula 1**: fetches the full race calendar (free practice, qualifying, sprint, race) from the Ergast-compatible Jolpi API.
+- **Formula 1**: fetches the full race calendar (free practice, qualifying, sprint, race) from the Ergast-compatible [Jolpica API](https://github.com/jolpica/jolpica-f1).
 - **MotoGP**: fetches race events and all session types (practice, qualifying, sprint, warmup, race) from the official MotoGP API.
 - **UTC normalization**: every session start/end is converted to UTC using the circuit's local timezone (MotoGP), so consumers never have to deal with venue-local times.
 - **Idempotent merge**: already-fetched calendars are diffed against new data by round; events are classified as *added*, *unchanged*, or *modified*, and existing data is preserved where possible.
@@ -65,9 +65,9 @@ race) to produce the `end` timestamp.
 
 ## Data sources
 
-- F1: `https://api.jolpi.ca/ergast/f1/2026.json`
+- F1: [jolpica-f1](https://github.com/jolpica/jolpica-f1) via `https://api.jolpi.ca/ergast/f1/2026.json`
 - MotoGP: `https://api.motogp.pulselive.com/motogp/v1/results/` (seasons, events, sessions)
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT: see [LICENSE](LICENSE).
