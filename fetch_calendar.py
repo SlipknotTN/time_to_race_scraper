@@ -3,8 +3,9 @@
 
 import json
 import os
+import re
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, time as dt_time
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 
@@ -190,6 +191,25 @@ MOTOGP_FP_DURATIONS = {
     2: timedelta(minutes=30),
 }
 
+# User-requested pins: the API keeps re-proposing these values, so ignore the
+# updates and keep the agreed data. Session times are venue-local "HH:MM:SS"
+# and are applied before the timezone conversion (dates/durations still follow
+# the event and session type).
+MOTOGP_SESSION_TIME_PINS = {
+    # JPN: keep the published times instead of the API's actual (delayed) starts
+    ("JPN", "Q", 1): "10:50:00",
+    ("JPN", "Q", 2): "11:15:00",
+    ("JPN", "WUP", None): "09:40:00",
+    # INA: keep the published times; Practice was delayed 35 min by Race
+    # Direction communication issues and Q1/Q2 started 5 min late.
+    ("INA", "PR", None): "15:00:00",
+    ("INA", "Q", 1): "10:50:00",
+    ("INA", "Q", 2): "11:15:00",
+    # AUS: the race was delayed by two hours (and then cancelled); keep the
+    # planned 14:00 local start.
+    ("AUS", "RAC", None): "14:00:00",
+}
+
 
 def fetch_motogp_calendar():
     seasons = fetch_json(MOTOGP_SEASON_URL)
@@ -239,7 +259,7 @@ def fetch_motogp_calendar():
             rac_ids = ", ".join(s.get("id", "?") for s in rac_sessions)
             print(
                 f"WARNING: {ev.get('short_name', '?')} ({ev.get('name', '?')} round {round_num}) "
-                f"has {len(rac_sessions)} RAC sessions – only first will be saved "
+                f"has {len(rac_sessions)} RAC sessions: only first will be saved "
                 f"(ids: {rac_ids}; dates: {', '.join(s.get('date','?') for s in rac_sessions)})",
                 file=sys.stderr,
             )
@@ -265,7 +285,7 @@ def fetch_motogp_calendar():
         sessions = []
         for ses in sessions_data:
             stype = ses["type"]
-            # Don't save Race 2 – Catalonia API returns spurious second RAC (number=2)
+            # Don't save Race 2: Catalonia API returns spurious second RAC (number=2)
             if stype == "RAC" and ses.get("number") == 2:
                 print(
                     f"  Skipping extra RAC session {ses.get('id','?')} "
@@ -276,9 +296,26 @@ def fetch_motogp_calendar():
 
             raw_date = ses["date"]
             offset = motogp_day_offset(stype, ses.get("number"))
+            local_time = datetime.fromisoformat(raw_date).time()
+
+            # Apply user-requested pins (venue-local time-of-day)
+            pin_time = MOTOGP_SESSION_TIME_PINS.get(
+                (ev.get("short_name", ""), stype, ses.get("number"))
+            )
+            if pin_time:
+                pinned = dt_time.fromisoformat(pin_time)
+                if local_time != pinned:
+                    num = ses.get("number")
+                    pin_label = f"{stype}{num}" if num is not None else stype
+                    print(
+                        f"PINNED: {ev.get('short_name','?')} {pin_label} "
+                        f"{local_time.strftime('%H:%M')} -> {pin_time[:5]} local",
+                        file=sys.stderr,
+                    )
+                local_time = pinned
+
             if fri_date is not None and offset is not None:
                 # Keep local time-of-day from API, fix calendar date from event
-                local_time = datetime.fromisoformat(raw_date).time()
                 target_date = fri_date + timedelta(days=offset)
                 if datetime.fromisoformat(raw_date).date() != target_date:
                     print(
@@ -305,6 +342,12 @@ def fetch_motogp_calendar():
                 label = f"Free Practice {ses['number']}"
             elif stype == "FP" and ses.get("number") is None:
                 label = "Free Practice"
+
+            if ses.get("status") == "CANCELLED":
+                print(
+                    f"NOTE: {ev.get('short_name','?')} {label} is CANCELLED; keeping entry",
+                    file=sys.stderr,
+                )
 
             sessions.append({
                 "name": label,
@@ -333,10 +376,12 @@ def fetch_motogp_calendar():
 
 def clean_event_name(name):
     name = " ".join(name.split())
-    if not name.isupper():
-        return name
-    words = [w.capitalize() if w.lower() != "of" else "of" for w in name.split()]
-    return " ".join(words)
+    if name.isupper():
+        words = [w.capitalize() if w.lower() != "of" else "of" for w in name.split()]
+        name = " ".join(words)
+    # Normalize the conjunction in event names: AND / And -> and
+    name = re.sub(r"\b(?:AND|And)\b", "and", name)
+    return name
 
 
 def load_json(filename):
@@ -380,7 +425,7 @@ def merge_events(old_events, new_events):
 
 def write_log(log_path, series, changes, elapsed):
     lines = []
-    lines.append(f"=== {series} calendar sync — {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')} ===")
+    lines.append(f"=== {series} calendar sync: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')} ===")
     lines.append(f"Completed in {elapsed:.2f}s")
 
     for label, key in [("Added", "added"), ("Unchanged", "unchanged")]:
