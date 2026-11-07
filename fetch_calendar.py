@@ -104,7 +104,7 @@ F1_SESSION_LABELS = {
     "SecondPractice": "Free Practice 2",
     "ThirdPractice": "Free Practice 3",
     "Qualifying": "Qualifying",
-    "Sprint": "Sprint",
+    "Sprint": "Sprint Race",
     "SprintQualifying": "Sprint Qualifying",
 }
 
@@ -135,6 +135,13 @@ def fetch_f1_calendar():
 
         race_start = parse_f1_utc(race["date"], race.get("time", "00:00:00Z"))
         race_duration = F1_SESSION_DURATIONS["Race"]
+
+        # A sprint weekend must also expose Sprint Qualifying
+        if "Sprint" in race and "SprintQualifying" not in race:
+            print(
+                f"WARNING: {name} (round {round_num}) has Sprint but no SprintQualifying",
+                file=sys.stderr,
+            )
 
         sessions = [
             {
@@ -171,7 +178,7 @@ MOTOGP_SESSION_LABELS = {
     "FP": "Free Practice",
     "PR": "Practice",
     "Q": "Qualifying",
-    "SPR": "Sprint",
+    "SPR": "Sprint Race",
     "WUP": "Warmup",
     "RAC": "Race",
 }
