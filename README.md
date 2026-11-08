@@ -63,6 +63,22 @@ Session durations that are not provided by the source APIs are estimated from ty
 values (e.g. 1 hour for practice/qualifying, 30 minutes for a sprint, 2 hours for an F1
 race) to produce the `end` timestamp.
 
+## Planned times and cancellations
+
+The calendars contain the planned (published) date and time of every session, not the
+actual start times recorded after the event. The source APIs replace the scheduled
+values with the real start times once a session has taken place, so the scraper keeps
+the published times for sessions affected by last-minute delays (for example the
+MotoGP rounds in Japan, Indonesia and Australia).
+
+The scraper also accounts for schedule changes:
+
+- Postponed events use their new planned date, not the original one.
+- Events cancelled in advance are removed from the calendar.
+- Last-minute cancellations (for example a session stopped by weather after the event
+  had already started) keep their planned time, so the calendar still shows when the
+  session was supposed to run.
+
 ## Data sources
 
 - F1: [jolpica-f1](https://github.com/jolpica/jolpica-f1) via `https://api.jolpi.ca/ergast/f1/2026.json`

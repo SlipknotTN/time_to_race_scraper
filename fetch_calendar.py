@@ -240,7 +240,23 @@ def fetch_motogp_calendar():
     if not events_data:
         return None
 
-    events_list = [e for e in events_data if not e.get("test", False)]
+    events_list = []
+    for ev in events_data:
+        # Skip test events, keep championship events only
+        if ev.get("test", False):
+            continue
+        status = str(ev.get("status", "")).upper()
+        if status in ("CANCELLED", "CANCELED"):
+            # An event cancelled in advance is dropped from the calendar.
+            # Last-minute cancellations are kept: those are flagged on the
+            # individual sessions instead of on the event.
+            print(
+                f"NOTE: {ev.get('short_name','?')} {ev.get('name','?')} is {status}; "
+                f"removing event",
+                file=sys.stderr,
+            )
+            continue
+        events_list.append(ev)
     events_list.sort(key=lambda e: e.get("date_start", ""))
 
     result = []
